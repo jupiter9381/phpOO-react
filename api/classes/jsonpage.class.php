@@ -29,6 +29,9 @@ class JSONpage {
             case 'update':
                 $this->page = $this->json_update();
                 break;
+            case 'authors':
+                $this->page = $this->json_authors();
+                break;
             case 'login':
                 $this->page = $this->json_login();
                 break;
@@ -45,7 +48,7 @@ class JSONpage {
 
 //an arbitrary max range of 1000 is set
     private function sanitiseNum($x) {
-        return filter_var($x, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>0, "max_range"=>1000)));
+        return filter_var($x, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>0, "max_range"=>100000)));
     }
 
     private function json_welcome() {
@@ -111,9 +114,9 @@ class JSONpage {
 
         if (isset($_REQUEST['actor_id'])) {
             $query .= " INNER JOIN film_actor on 
-     (film.film_id = film_actor.film_id)
-     INNER JOIN actor on 
-     (film_actor.actor_id = actor.actor_id) ";
+                (film.film_id = film_actor.film_id)
+                INNER JOIN actor on 
+                (film_actor.actor_id = actor.actor_id) ";
 
             $where .= " actor.actor_id = :actor_id ";
             $doneWhere = TRUE;
@@ -169,22 +172,20 @@ class JSONpage {
         $status = 400;
         $token = null;
         $input = json_decode(file_get_contents("php://input"));
-
         if ($input) {
 
             if (isset($input->email) && isset($input->password)) {
-                $query  = "SELECT firstname, lastname, password FROM users WHERE email LIKE :email";
+                $query  = "SELECT username, admin, password, email FROM users WHERE email LIKE :email";
                 $params = ["email" => $input->email];
                 $res = json_decode($this->recordset->getJSONRecordSet($query, $params),true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
 
                 if (password_verify($input->password, $password)) {
-                    $msg = "User authorised. Welcome ". $res['data'][0]['firstname'] . " " . $res['data'][0]['lastname'];
+                    $msg = "User authorised. Welcome ". $res['data'][0]['username'];
                     $status = 200;
                     $token = array();
                     $token['email'] = $input->email;
-                    $token['firstname'] = $res['data'][0]['firstname'];
-                    $token['lastname'] = $res['data'][0]['lastname'];
+                    $token['username'] = $res['data'][0]['username'];
                     $token['iat'] = time();
                     $token['exp'] = time() +(60*60);
 
@@ -239,5 +240,31 @@ class JSONpage {
 
     public function get_page() {
         return $this->page;
+    }
+
+    public function json_authors() {
+        $query  = "SELECT authorId, name FROM authors";
+        $params = [];
+
+        if (isset($_REQUEST['search'])) {
+            $query .= " WHERE name LIKE :term";
+            $term = $this->sanitiseString("%".$_REQUEST['search']."%");
+            $params = ["term" => $term];
+        } else {
+            if (isset($_REQUEST['authorId'])) {
+                $query .= " WHERE authorId = :term";
+                $term = $this->sanitiseNum($_REQUEST['authorId']);
+                $params = ["term" => $term];
+            }
+        }
+        if (isset($_REQUEST['page'])) {
+            $query .= " ORDER BY last_name";
+            $query .= " LIMIT 10 ";
+            $query .= " OFFSET ";
+            $query .= 10 * ($this->sanitiseNum($_REQUEST['page'])-1);
+            return $query;
+        }
+
+        return ($this->recordset->getJSONRecordSet($query, $params));
     }
 }

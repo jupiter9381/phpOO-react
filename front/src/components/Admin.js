@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from './Login.js';
 import Update from './Update.js';
-
+import Config from '../config.js';
 
 class Admin extends React.Component {
 
@@ -59,7 +59,7 @@ class Admin extends React.Component {
     }
 
     handleLoginClick = () => {
-        const url = "http://192.168.64.2/code/week6b/a/api/login"
+        const url = Config.apiUrl + '/login';
         let myJSON = {"email":this.state.email, "password":this.state.password}
         this.postData(url, myJSON, this.loginCallback)
     }

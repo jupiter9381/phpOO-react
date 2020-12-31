@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, NavLink } from "react-router-do
 import Home from './components/Home.js';
 import Films from './components/Films.js'
 import Actors from './components/Actors.js';
+import Authors from  './components/Authors.js';
 import Admin from './components/Admin.js';
 import NotFound404 from './components/NotFound404.js';
 
@@ -26,6 +27,9 @@ function App() {
                                 <NavLink activeClassName="selected" to="/films">Films</NavLink>
                             </li>
                             <li>
+                                <NavLink activeClassName="selected" to="/author">Authors</NavLink>
+                            </li>
+                            <li>
                                 <NavLink activeClassName="selected" to="/actors">Actors</NavLink>
                             </li>
                             <li>
@@ -39,6 +43,9 @@ function App() {
                         </Route>
                         <Route path="/films">
                             <Films />
+                        </Route>
+                        <Route path="/author">
+                            <Authors />
                         </Route>
                         <Route path="/actors">
                             <Actors />
