@@ -2,7 +2,7 @@ import React from 'react';
 import Search from './Search.js';
 import Config from '../config.js';
 import Author from './Author.js';
-
+import { isAuthenticated } from './utils.js'
 class Authors extends React.Component {
 
     constructor(props) {
@@ -16,8 +16,13 @@ class Authors extends React.Component {
     }
 
     componentDidMount() {
+        console.log("componentDidMount");
+        let token = localStorage.getItem('myToken');
         const url = `${Config.apiUrl}/authors`;
-        fetch(url)
+        fetch(url, {
+            method: "post",
+            body: JSON.stringify({token: token})
+        })
             .then( (response) => response.json() )
             .then( (data) => {
                 this.setState({data:data.data})
@@ -49,6 +54,8 @@ class Authors extends React.Component {
     }
 
     render() {
+        //console.log(isAuthenticated());
+        //if(!isAuthenticated()) 
         let filteredData =  (
             this.state.data
                 .filter(this.searchDetails)

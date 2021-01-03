@@ -187,7 +187,7 @@ class JSONpage {
                     $token['email'] = $input->email;
                     $token['username'] = $res['data'][0]['username'];
                     $token['iat'] = time();
-                    $token['exp'] = time() +(60*60);
+                    $token['exp'] = time() +(60);
 
                     $token = \Firebase\JWT\JWT::encode($token, 'secret_server_key');
 
@@ -243,6 +243,14 @@ class JSONpage {
     }
 
     public function json_authors() {
+        $input = json_decode(file_get_contents("php://input"));
+        // try {
+        //     $jwtkey = 'secret_server_key';
+        //     $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
+        // }
+        // catch (UnexpectedValueException $e) {
+        //     return json_encode(array("status" => 401, "message" => $e->getMessage()));
+        // }
         $query  = "SELECT authorId, name FROM authors";
         $params = [];
 
