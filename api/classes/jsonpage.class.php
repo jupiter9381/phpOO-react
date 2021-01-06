@@ -32,6 +32,12 @@ class JSONpage {
             case 'authors':
                 $this->page = $this->json_authors();
                 break;
+            case 'content_authors':
+                $this->page = $this->json_content_authors();
+                break;
+            case 'schedule':
+                    $this->page = $this->json_schedule();
+                    break;
             case 'login':
                 $this->page = $this->json_login();
                 break;
@@ -273,6 +279,26 @@ class JSONpage {
             return $query;
         }
 
+        return ($this->recordset->getJSONRecordSet($query, $params));
+    }
+    public function json_content_authors() {
+        $query  = "SELECT authorId, authorInst, content_authors.contentId, content.title FROM content_authors JOIN content on (content_authors.contentId = content.contentId)";
+        $params = [];
+        if(isset($_REQUEST['authorId'])) {
+            $query .= " WHERE authorId = :term";
+            $term = $this->sanitiseNum($_REQUEST['authorId']);
+            $params = ["term" => $term];
+        }
+        return ($this->recordset->getJSONRecordSet($query, $params));
+    }
+    public function json_schedule() {
+        $query = "SELECT * from slots";
+
+        if(isset($_REQUEST['day'])) {
+            $query .= " WHERE dayString = :term";
+            $term = $this->sanitiseString($_REQUEST['day']);
+            $params = ["term" => $term];
+        }
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
 }

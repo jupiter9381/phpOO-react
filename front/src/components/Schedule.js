@@ -1,10 +1,10 @@
 import React from 'react';
 import Search from './Search.js';
 import Config from '../config.js';
-import Author from './Author.js';
+import ScheduleDay from './ScheduleDay.js';
 import { isAuthenticated } from './utils.js'
 
-class Authors extends React.Component {
+class Schedule extends React.Component {
 
     constructor(props) {
         super(props);
@@ -54,33 +54,19 @@ class Authors extends React.Component {
     }
 
     render() {
-        //console.log(isAuthenticated());
-        //if(!isAuthenticated()) 
-        let filteredData =  (
-            this.state.data
-                .filter(this.searchDetails)
-        )
-
-        let noOfPages = Math.ceil(filteredData.length/this.state.pageSize)
-        if (noOfPages === 0) {noOfPages=1}
-        let disabledPrevious = (this.state.page <= 1)
-        let disabledNext = (this.state.page >= noOfPages)
-
+        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         return (
-            <div>
-                <h1>Authors</h1>
-                <Search query={this.state.query} handleSearch={this.handleSearch}/>
+            <div className="wrapper">
+                <h1>Schedule</h1>
+                <div className="row">
                 {
-                    filteredData
-                        .slice(((this.state.pageSize*this.state.page)-this.state.pageSize),(this.state.pageSize*this.state.page))
-                        .map( (details, i) => (<Author key={i} details={details} />) )
+                    days.map((day, key) => (<ScheduleDay details={day} key={key}></ScheduleDay>))
                 }
-                <button onClick={this.handlePreviousClick} disabled={disabledPrevious}>Previous</button>
-                Page {this.state.page} of {noOfPages}
-                <button onClick={this.handleNextClick} disabled={disabledNext}>Next</button>
+                </div>
+                
             </div>
         );
     }
 }
 
-export default Authors;
+export default Schedule;

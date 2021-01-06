@@ -29,10 +29,27 @@ nav li a:hover {
   background-color: #111;
 }
 
-.selected{
-  background-color: #111 ;
+.selected {
+  background-color: #111;
 }
-
+.wrapper {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+.bg-darkgrey {
+  background: darkgrey;
+}
+.time-slot {
+  font-size: 22px;
+  color: white;
+  padding: 0 10px;
+  display: block;
+  cursor: pointer;
+}
+.day_title {
+  background: grey;
+  cursor: pointer;
+}
 @media screen and (max-width: 500px) {
   nav li {
     text-align: center;

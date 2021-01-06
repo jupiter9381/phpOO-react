@@ -4,18 +4,16 @@ import Home from './components/Home.js';
 import Films from './components/Films.js'
 import Actors from './components/Actors.js';
 import Authors from  './components/Authors.js';
+import Schedule from  './components/Schedule.js';
 import Admin from './components/Admin.js';
 import NotFound404 from './components/NotFound404.js';
 
 import './App.css';
-
-
-
-
+import history from './history.js';
 
 function App() {
     return (
-        <Router>
+        <Router history={history}>
             <div className="App">
                 <div>
                     <nav>
@@ -24,7 +22,7 @@ function App() {
                                 <NavLink activeClassName="selected" exact to="/">Home</NavLink>
                             </li>
                             <li>
-                                <NavLink activeClassName="selected" to="/films">Films</NavLink>
+                                <NavLink activeClassName="selected" to="/schedule">Schedule</NavLink>
                             </li>
                             <li>
                                 <NavLink activeClassName="selected" to="/author">Authors</NavLink>
@@ -43,6 +41,9 @@ function App() {
                         </Route>
                         <Route path="/films">
                             <Films />
+                        </Route>
+                        <Route path="/schedule">
+                            <Schedule />
                         </Route>
                         <Route path="/author">
                             <Authors />

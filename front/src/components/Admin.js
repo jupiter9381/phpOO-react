@@ -2,7 +2,8 @@ import React from 'react';
 import Login from './Login.js';
 import Update from './Update.js';
 import Config from '../config.js';
-
+import history from '../history.js';
+import { withRouter } from 'react-router-dom';
 class Admin extends React.Component {
 
     state = {"authenticated":false, "email":"", "password":""}
@@ -37,21 +38,21 @@ class Admin extends React.Component {
     }
 
     loginCallback = (data) => {
-        console.log(data)
         if (data.status === 200) {
             this.setState({"authenticated":true, "token":data.token})
             localStorage.setItem('myToken', data.token);
+           history.push('/author');
         }
     }
 
     componentDidMount() {
         if(localStorage.getItem('myToken')) {
             this.setState({"authenticated":true});
+            window.location.href= "/author";
         }
     }
 
     updateCallback = (data) => {
-        console.log(data)
         if (data.status !== 200) {
             this.setState({"authenticated":false})
             localStorage.removeItem('myToken');
@@ -104,4 +105,4 @@ class Admin extends React.Component {
 
 }
 
-export default Admin;
+export default withRouter(Admin);
