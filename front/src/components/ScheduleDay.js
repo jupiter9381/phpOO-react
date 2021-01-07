@@ -31,11 +31,10 @@ class ScheduleDay extends React.Component {
             let startHour = this.state.data[0].startHour;
             let endHour = this.state.data[this.state.data.length - 1].endHour;
             let timeSlots = [];
-            this.state.data.forEach(item => {
-                timeSlots.push({startHour: item.startHour, startMinute: item.startMinute, endHour: item.endHour, endMinute: item.endMinute});
+            this.state.data.forEach((item, key) => {
+                timeSlots.push(item);
             });
-            scheduleDetail = <ScheduleDetail timeSlots={timeSlots} tartHour={startHour} endHour={endHour} display={this.state.display}/>
-            //scheduleDetail = this.state.data.map( (details, i) => (<ScheduleDetail key={i} details={details} display={this.state.display}/>) )
+            scheduleDetail = <ScheduleDetail timeSlots={timeSlots} display={this.state.display}/>
         }
 
         return (

@@ -36,8 +36,11 @@ class JSONpage {
                 $this->page = $this->json_content_authors();
                 break;
             case 'schedule':
-                    $this->page = $this->json_schedule();
-                    break;
+                $this->page = $this->json_schedule();
+                break;
+            case 'schedule_detail':
+                $this->page = $this->json_schedule_detail();
+                break;
             case 'login':
                 $this->page = $this->json_login();
                 break;
@@ -297,6 +300,15 @@ class JSONpage {
         if(isset($_REQUEST['day'])) {
             $query .= " WHERE dayString = :term";
             $term = $this->sanitiseString($_REQUEST['day']);
+            $params = ["term" => $term];
+        }
+        return ($this->recordset->getJSONRecordSet($query, $params));
+    }
+    public function json_schedule_detail() {
+        $query = "SELECT sessions.*, rooms.name as room_name, session_types.name as session_type, content.*, authors.name as author_name  from sessions JOIN rooms on (rooms.roomId=sessions.roomId) JOIN session_types on (session_types.typeId=sessions.typeId) JOIN sessions_content on (sessions_content.sessionId=sessions.sessionId) JOIN content on (content.contentId=sessions_content.contentId) JOIN content_authors on (content_authors.contentId=content.contentId) JOIN authors on (authors.authorId=content_authors.authorId)";
+        if(isset($_REQUEST['slotId'])) {
+            $query .= " WHERE sessions.slotId=:term";
+            $term = $this->sanitiseNum($_REQUEST['slotId']);
             $params = ["term" => $term];
         }
         return ($this->recordset->getJSONRecordSet($query, $params));

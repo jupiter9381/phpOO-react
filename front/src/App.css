@@ -50,6 +50,10 @@ nav li a:hover {
   background: grey;
   cursor: pointer;
 }
+.schedule_content p {
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
 @media screen and (max-width: 500px) {
   nav li {
     text-align: center;
