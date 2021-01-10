@@ -42,7 +42,7 @@ class Admin extends React.Component {
             localStorage.setItem('myToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             //history.push('/sessions');
-            window.location.href="/sessions";
+            //window.location.href="/sessions";
         }
     }
 
