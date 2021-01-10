@@ -15,9 +15,6 @@ class ScheduleDetail extends React.Component {
         this.setState({displayFurther:!this.state.displayFurther})
     }
     render() {
-
-        let info = "";
-        let furtherInfo = "";
                 
         return (
             <div className="bg-darkgrey">

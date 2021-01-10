@@ -13,7 +13,6 @@ class ScheduleContent extends React.Component {
 
     handleTimeClick = () => {
         console.log(this.props.time);
-        let slotId = this.props.time.slotId;
         this.setState({display:!this.state.display})
     }
     render() {
@@ -24,7 +23,7 @@ class ScheduleContent extends React.Component {
                 <p><strong>Chair:</strong> {this.props.content.chairId}</p>
                 <p><strong>Content Name:</strong> {this.props.content.title}</p>
                 <p><strong>Abstract:</strong> {this.props.content.abstract}</p>
-                <p><strong>Authors:</strong> {this.props.content.author_name}</p>
+                <p><strong>Authors:</strong> {this.props.content.authors.toString()}</p>
                 <p><strong>Award Given if applicable:</strong> {this.props.content.award}</p>
             </div>
         );

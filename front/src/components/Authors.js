@@ -2,7 +2,7 @@ import React from 'react';
 import Search from './Search.js';
 import Config from '../config.js';
 import Author from './Author.js';
-import { isAuthenticated } from './utils.js'
+import { isAuthenticated, clearAndGoAdmin } from './utils.js'
 
 class Authors extends React.Component {
 
@@ -17,6 +17,7 @@ class Authors extends React.Component {
     }
 
     componentDidMount() {
+        if(!isAuthenticated()) window.location.href="/admin";
         let token = localStorage.getItem('myToken');
         const url = `${Config.apiUrl}/authors`;
         fetch(url, {
@@ -28,6 +29,7 @@ class Authors extends React.Component {
                 this.setState({data:data.data})
             })
             .catch ((err) => {
+                    clearAndGoAdmin();
                     console.log("something went wrong ", err)
                 }
             );

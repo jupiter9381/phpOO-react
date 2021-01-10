@@ -2,7 +2,6 @@ import React from 'react';
 import Login from './Login.js';
 import Update from './Update.js';
 import Config from '../config.js';
-import history from '../history.js';
 import { withRouter } from 'react-router-dom';
 class Admin extends React.Component {
 
@@ -41,7 +40,9 @@ class Admin extends React.Component {
         if (data.status === 200) {
             this.setState({"authenticated":true, "token":data.token})
             localStorage.setItem('myToken', data.token);
-           history.push('/author');
+            localStorage.setItem('user', JSON.stringify(data.user));
+            //history.push('/sessions');
+            window.location.href="/sessions";
         }
     }
 

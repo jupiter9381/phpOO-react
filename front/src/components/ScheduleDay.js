@@ -1,19 +1,24 @@
 import React from 'react';
 import Config from '../config.js';
 import ScheduleDetail from './ScheduleDetail';
-
+import { clearAndGoAdmin } from './utils.js'
 class ScheduleDay extends React.Component {
 
     state = {display:false, data:[]}
 
     loadScheduleDetails = () => {
+        let token = localStorage.getItem('myToken');
         const url = `${Config.apiUrl}/schedule?day=${this.props.details}`;
-        fetch(url)
+        fetch(url, {
+            method: "post",
+            body: JSON.stringify({token: token})
+        })
             .then( (response) => response.json() )
             .then( (data) => {
                 this.setState({data:data.data})
             })
             .catch ((err) => {
+                clearAndGoAdmin();
                     console.log("something went wrong ", err)
                 }
             );
@@ -28,8 +33,6 @@ class ScheduleDay extends React.Component {
 
         let scheduleDetail = ""
         if (this.state.display && this.state.data.length > 0) {
-            let startHour = this.state.data[0].startHour;
-            let endHour = this.state.data[this.state.data.length - 1].endHour;
             let timeSlots = [];
             this.state.data.forEach((item, key) => {
                 timeSlots.push(item);

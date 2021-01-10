@@ -41,6 +41,9 @@ class JSONpage {
             case 'schedule_detail':
                 $this->page = $this->json_schedule_detail();
                 break;
+            case 'sessions': 
+                $this->page = $this->json_sessions();
+                break;
             case 'login':
                 $this->page = $this->json_login();
                 break;
@@ -188,7 +191,7 @@ class JSONpage {
                 $params = ["email" => $input->email];
                 $res = json_decode($this->recordset->getJSONRecordSet($query, $params),true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
-
+                $user = ($res['count']) ? $res['data'][0] : null;
                 if (password_verify($input->password, $password)) {
                     $msg = "User authorised. Welcome ". $res['data'][0]['username'];
                     $status = 200;
@@ -196,7 +199,7 @@ class JSONpage {
                     $token['email'] = $input->email;
                     $token['username'] = $res['data'][0]['username'];
                     $token['iat'] = time();
-                    $token['exp'] = time() +(60);
+                    $token['exp'] = time() +(60*5);
 
                     $token = \Firebase\JWT\JWT::encode($token, 'secret_server_key');
 
@@ -208,7 +211,7 @@ class JSONpage {
             }
         }
 
-        return json_encode(array("status" => $status, "message" => $msg, "token" => $token));
+        return json_encode(array("status" => $status, "message" => $msg, "token" => $token, "user" => $user));
     }
 
     /**
@@ -253,13 +256,13 @@ class JSONpage {
 
     public function json_authors() {
         $input = json_decode(file_get_contents("php://input"));
-        // try {
-        //     $jwtkey = 'secret_server_key';
-        //     $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
-        // }
-        // catch (UnexpectedValueException $e) {
-        //     return json_encode(array("status" => 401, "message" => $e->getMessage()));
-        // }
+        try {
+            $jwtkey = 'secret_server_key';
+            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
+        }
+        catch (UnexpectedValueException $e) {
+            return json_encode(array("status" => 401, "message" => $e->getMessage()));
+        }
         $query  = "SELECT authorId, name FROM authors";
         $params = [];
 
@@ -295,6 +298,14 @@ class JSONpage {
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
     public function json_schedule() {
+        $input = json_decode(file_get_contents("php://input"));
+        try {
+            $jwtkey = 'secret_server_key';
+            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
+        }
+        catch (UnexpectedValueException $e) {
+            return json_encode(array("status" => 401, "message" => $e->getMessage()));
+        }
         $query = "SELECT * from slots";
 
         if(isset($_REQUEST['day'])) {
@@ -311,6 +322,26 @@ class JSONpage {
             $term = $this->sanitiseNum($_REQUEST['slotId']);
             $params = ["term" => $term];
         }
+        return ($this->recordset->getJSONRecordSet($query, $params));
+    }
+    public function json_sessions() {
+        $input = json_decode(file_get_contents("php://input"));
+        try {
+            $jwtkey = 'secret_server_key';
+            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
+        }
+        catch (UnexpectedValueException $e) {
+            return json_encode(array("status" => 401, "message" => $e->getMessage()));
+        }
+        if(isset($_REQUEST['sessionId']) && isset($_REQUEST['name'])) {
+            $query = "UPDATE sessions SET name=:name WHERE sessionId=:sessionId";
+            $sessionId = $this->sanitiseNum($_REQUEST['sessionId']);
+            $name = $this->sanitiseString($_REQUEST['name']);
+            $params = ["name"=>$name, "sessionId"=>$sessionId];
+            $this->recordset->getJSONRecordSet($query, $params);
+        }
+        $query = "SELECT sessions.* FROM sessions";
+        $params = [];
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
 }

@@ -21,8 +21,21 @@ class ScheduleItem extends React.Component {
             fetch(url)
                 .then( (response) => response.json() )
                 .then( (data) => {
-                    console.log("schedule_data", data.data)
-                    this.setState({data:data.data})
+                    let result = [];
+                    data.data.forEach(obj => {
+                        let flag = false;
+                        for(var i = 0; i < result.length; i++) {
+                            if(result[i]['contentId'] === obj.contentId) {
+                                result[i]['authors'].push(obj.author_name)
+                                flag = true;break;
+                            }
+                        }
+                        if(flag === false) {
+                            obj['authors'] = [obj.author_name];
+                            result.push(obj);
+                        }
+                    })
+                    this.setState({data:result})
                 })
                 .catch ((err) => {
                         console.log("something went wrong ", err)

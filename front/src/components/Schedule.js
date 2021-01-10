@@ -1,8 +1,6 @@
 import React from 'react';
-import Search from './Search.js';
-import Config from '../config.js';
 import ScheduleDay from './ScheduleDay.js';
-import { isAuthenticated } from './utils.js'
+import { isAuthenticated } from './utils.js';
 
 class Schedule extends React.Component {
 
@@ -17,20 +15,7 @@ class Schedule extends React.Component {
     }
 
     componentDidMount() {
-        let token = localStorage.getItem('myToken');
-        const url = `${Config.apiUrl}/authors`;
-        fetch(url, {
-            method: "post",
-            body: JSON.stringify({token: token})
-        })
-            .then( (response) => response.json() )
-            .then( (data) => {
-                this.setState({data:data.data})
-            })
-            .catch ((err) => {
-                    console.log("something went wrong ", err)
-                }
-            );
+        if(!isAuthenticated()) window.location.href="/admin";
     }
 
     handlePreviousClick = () => {
