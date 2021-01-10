@@ -38,6 +38,7 @@ class Admin extends React.Component {
 
     loginCallback = (data) => {
         if (data.status === 200) {
+            console.log(data)
             this.setState({"authenticated":true, "token":data.token})
             localStorage.setItem('myToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));

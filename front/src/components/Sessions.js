@@ -29,7 +29,6 @@ class Sessions extends React.Component {
         if(!isAuthenticated()) window.location.href="/admin";
         this.setState({user: JSON.parse(localStorage.getItem("user"))});
         this.setState({token:localStorage.getItem("myToken")});
-        console.log(this.state.token)
         const url = Config.apiUrl + "/sessions";
         fetch(url, {
             method: 'post',
