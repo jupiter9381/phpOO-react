@@ -49,7 +49,6 @@ class Admin extends React.Component {
     componentDidMount() {
         if(localStorage.getItem('myToken')) {
             this.setState({"authenticated":true});
-            window.location.href= "/author";
         }
     }
 
