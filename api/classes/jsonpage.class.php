@@ -298,14 +298,6 @@ class JSONpage {
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
     public function json_schedule() {
-        $input = json_decode(file_get_contents("php://input"));
-        try {
-            $jwtkey = 'secret_server_key';
-            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
-        }
-        catch (UnexpectedValueException $e) {
-            return json_encode(array("status" => 401, "message" => $e->getMessage()));
-        }
         $query = "SELECT * from slots";
 
         if(isset($_REQUEST['day'])) {

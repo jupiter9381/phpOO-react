@@ -7,18 +7,13 @@ class ScheduleDay extends React.Component {
     state = {display:false, data:[]}
 
     loadScheduleDetails = () => {
-        let token = localStorage.getItem('myToken');
         const url = `${Config.apiUrl}/schedule?day=${this.props.details}`;
-        fetch(url, {
-            method: "post",
-            body: JSON.stringify({token: token})
-        })
+        fetch(url)
             .then( (response) => response.json() )
             .then( (data) => {
                 this.setState({data:data.data})
             })
             .catch ((err) => {
-                clearAndGoAdmin();
                     console.log("something went wrong ", err)
                 }
             );

@@ -15,7 +15,6 @@ class Schedule extends React.Component {
     }
 
     componentDidMount() {
-        if(!isAuthenticated()) window.location.href="/admin";
     }
 
     handlePreviousClick = () => {
