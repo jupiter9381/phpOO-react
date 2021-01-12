@@ -2,8 +2,6 @@ import React from 'react';
 import Search from './Search.js';
 import Config from '../config.js';
 import Author from './Author.js';
-import { isAuthenticated, clearAndGoAdmin } from './utils.js'
-
 class Authors extends React.Component {
 
     constructor(props) {
@@ -17,19 +15,13 @@ class Authors extends React.Component {
     }
 
     componentDidMount() {
-        if(!isAuthenticated()) window.location.href="/admin";
-        let token = localStorage.getItem('myToken');
         const url = `${Config.apiUrl}/authors`;
-        fetch(url, {
-            method: "post",
-            body: JSON.stringify({token: token})
-        })
+        fetch(url)
             .then( (response) => response.json() )
             .then( (data) => {
                 this.setState({data:data.data})
             })
             .catch ((err) => {
-                    clearAndGoAdmin();
                     console.log("something went wrong ", err)
                 }
             );

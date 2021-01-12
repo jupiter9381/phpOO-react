@@ -91,7 +91,10 @@ class Sessions extends React.Component {
 
     handleUpdateSession = () => {
         const url = Config.apiUrl + "/sessions?sessionId="+this.state.selected_sessionId+"&name="+this.state.selected_sessionname;
-        fetch(url)
+        fetch(url, {
+            method: 'post',
+            body: JSON.stringify({token: localStorage.getItem("myToken")})
+        })
             .then( (response) => response.json() )
             .then( (data) => {
                 this.setState({selected_sessionname: "", selected_sessionId: ""})

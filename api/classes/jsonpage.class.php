@@ -20,12 +20,6 @@ class JSONpage {
             case 'api':
                 $this->page = $this->json_welcome();
                 break;
-            case 'actors':
-                $this->page = $this->json_actors();
-                break;
-            case 'films':
-                $this->page = $this->json_films();
-                break;
             case 'update':
                 $this->page = $this->json_update();
                 break;
@@ -64,8 +58,17 @@ class JSONpage {
     }
 
     private function json_welcome() {
-        $msg = array("message"=>"welcome", "author"=>"Mohammad Gerashi");
-        return json_encode($msg);
+        $data = array();
+        $data['welcome'] = array('message' => 'Welcome!', "author" => "Mohammad Gerashi");
+        $data['endpoint_1'] = array('api' => 'api/login', "details" => "To authenticate user with email and password");
+        $data['endpoint_2'] = array('api' => 'api/authors', "details" => "To get list of authors");
+        $data['endpoint_3'] = array('api' => 'api/authors?search=', "details" => "To search list of authors according to the search parameter");
+        $data['endpoint_4'] = array('api' => 'api/sessions', "details" => "To get list of sessions");
+        $data['endpoint_5'] = array('api' => 'api/sessions?sessionId=&name=', "details" => "To update session name according to the sessionId and get the updated sessions");
+        $data['endpoint_6'] = array('api' => 'api/content_authors?authorId=', "details" => "To get the information of content and its author according to the authorId paramteter");
+        $data['endpoint_7'] = array('api' => 'api/schedule?day=', "details" => "To get time slots according to the day paramteter");
+        $data['endpoint_8'] = array('api' => 'api/schedule_detail?slotId=', "details" => "To get schedule information according to the slotId");
+        return json_encode($data);
     }
 
     private function json_error() {
@@ -81,104 +84,11 @@ class JSONpage {
         return $query;
     }
 
-    /**
-     * json_actors
-     *
-     * @todo this function can be improved
-     */
-    private function json_actors() {
-        $query  = "SELECT first_name, last_name FROM actor";
-        $params = [];
-
-        if (isset($_REQUEST['search'])) {
-            $query .= " WHERE last_name LIKE :term";
-            $term = $this->sanitiseString("%".$_REQUEST['search']."%");
-            $params = ["term" => $term];
-        } else {
-            if (isset($_REQUEST['id'])) {
-                $query .= " WHERE actor_id = :term";
-                $term = $this->sanitiseNum($_REQUEST['id']);
-                $params = ["term" => $term];
-            }
-        }
-
-        if (isset($_REQUEST['page'])) {
-            $query .= " ORDER BY last_name";
-            $query .= " LIMIT 10 ";
-            $query .= " OFFSET ";
-            $query .= 10 * ($this->sanitiseNum($_REQUEST['page'])-1);
-            return $query;
-        }
-
-        return ($this->recordset->getJSONRecordSet($query, $params));
-    }
-
-    /**
-     * json_films
-     *
-     * @todo this function can be improved
-     */
-    private function json_films() {
-        $query  = "SELECT film.film_id, film.title, film.description, film.rating, language.name AS language, film.length, category.name AS category FROM film JOIN language on (language.language_id = film.language_id) JOIN category on (category.category_id = film.category_id) ";
-        $params = [];
-        $where = " WHERE ";
-        $doneWhere = FALSE;
-
-        if (isset($_REQUEST['actor_id'])) {
-            $query .= " INNER JOIN film_actor on 
-                (film.film_id = film_actor.film_id)
-                INNER JOIN actor on 
-                (film_actor.actor_id = actor.actor_id) ";
-
-            $where .= " actor.actor_id = :actor_id ";
-            $doneWhere = TRUE;
-            $term = $this->sanitiseNum($_REQUEST['actor_id']);
-            $params["actor_id"] = $term;
-        }
-
-        if (isset($_REQUEST['search'])) {
-            $doneWhere ? $where .= " AND " : $doneWhere = TRUE;
-
-            $where .= " title LIKE :search";
-            $term = $this->sanitiseString("%".$_REQUEST['search']."%");
-            $params["search"] = $term;
-        }
-        if (isset($_REQUEST['id'])) {
-            $doneWhere ? $where .= " AND " : $doneWhere = TRUE;
-
-            $where .= " film_id = :film_id ";
-            $term = $this->sanitiseNum($_REQUEST['id']);
-            $params["film_id"] = $term;
-        }
-
-        $query .= $doneWhere ? $where : "";
-
-        $nextpage = null;
-
-        // @todo - this assumes a page should contain 10 items, but this is not consistent with the client
-        if (isset($_REQUEST['page'])) {
-            $query .= " ORDER BY film_id";
-            $query .= " LIMIT 10 ";
-            $query .= " OFFSET ";
-            $query .= 10 * ($this->sanitiseNum($_REQUEST['page'])-1);
-            $nextpage = BASEPATH."api/films?page=".$this->sanitiseNum($_REQUEST['page']+1);
-        }
-
-        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
-        // @todo - A recordset method that returns an associative array might be more appropriate
-        $res = json_decode($this->recordset->getJSONRecordSet($query, $params),true);
-
-        $res['status'] = 200;
-        $res['message'] = "ok";
-        $res['next_page'] = $nextpage;
-        return json_encode($res);
-    }
-
-    /**
-     * json_login
-     *
-     * @todo this method can be improved
-     */
+    /*
+        function to validate if email and password 
+        @param 
+        @return {status: 200, message: "", token: "", user: {}} 
+    */
     private function json_login() {
         $msg = "Invalid request. Username and password required";
         $status = 400;
@@ -214,55 +124,17 @@ class JSONpage {
         return json_encode(array("status" => $status, "message" => $msg, "token" => $token, "user" => $user));
     }
 
-    /**
-     * json_update
-     *
-     * @todo this method can be improved
-     */
-    private function json_update() {
-        $input = json_decode(file_get_contents("php://input"));
-
-        if (!$input) {
-            return json_encode(array("status" => 400, "message" => "Invalid request"));
-        }
-        if (!isset($input->token)) {
-            return json_encode(array("status" => 401, "message" => "Not authorised"));
-        }
-        if (!isset($input->description) || !isset($input->film_id)) {
-            return json_encode(array("status" => 400, "message" => "Invalid request"));
-        }
-
-        try {
-            $jwtkey = JWTKEY;
-            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
-        }
-        catch (UnexpectedValueException $e) {
-            return json_encode(array("status" => 401, "message" => $e->getMessage()));
-        }
-
-        $query  = "UPDATE film SET description = :description WHERE film_id = :film_id";
-        $params = ["description" => $input->description, "film_id" => $input->film_id];
-        $res = $this->recordset->getJSONRecordSet($query, $params);
-        return json_encode(array("status" => 200, "message" => "ok", "result" => $res, "film_id" => $input->film_id,
-            "Description"=>$input->description));
-    }
-
-
-
 
     public function get_page() {
         return $this->page;
     }
 
+    /*
+        function to get authors 
+        @param search
+        @return {data: [], count: 0} 
+    */
     public function json_authors() {
-        $input = json_decode(file_get_contents("php://input"));
-        try {
-            $jwtkey = 'secret_server_key';
-            $tokenDecoded = \Firebase\JWT\JWT::decode($input->token, $jwtkey, array('HS256'));
-        }
-        catch (UnexpectedValueException $e) {
-            return json_encode(array("status" => 401, "message" => $e->getMessage()));
-        }
         $query  = "SELECT authorId, name FROM authors";
         $params = [];
 
@@ -287,6 +159,13 @@ class JSONpage {
 
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
+
+    /*
+        function to get content and its author data accourding to the authorId in the paramQuery. 
+        @param authorId
+        @return {data: [], count: 0} 
+    */
+
     public function json_content_authors() {
         $query  = "SELECT authorId, authorInst, content_authors.contentId, content.title FROM content_authors JOIN content on (content_authors.contentId = content.contentId)";
         $params = [];
@@ -297,6 +176,11 @@ class JSONpage {
         }
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
+    /*
+        function to get all time slots accourding to the day in the paramQuery. 
+        @param day (Monday ~ Sunday)
+        @return {data: [], count: 0} 
+    */
     public function json_schedule() {
         $query = "SELECT * from slots";
 
@@ -307,6 +191,11 @@ class JSONpage {
         }
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
+    /*
+        function to get session, room, content info and author name based on the slotId in param. (JWT token required)
+        @param slotId
+        @return {data: [], count: 0} 
+    */
     public function json_schedule_detail() {
         $query = "SELECT sessions.*, rooms.name as room_name, session_types.name as session_type, content.*, authors.name as author_name  from sessions JOIN rooms on (rooms.roomId=sessions.roomId) JOIN session_types on (session_types.typeId=sessions.typeId) JOIN sessions_content on (sessions_content.sessionId=sessions.sessionId) JOIN content on (content.contentId=sessions_content.contentId) JOIN content_authors on (content_authors.contentId=content.contentId) JOIN authors on (authors.authorId=content_authors.authorId)";
         if(isset($_REQUEST['slotId'])) {
@@ -316,6 +205,12 @@ class JSONpage {
         }
         return ($this->recordset->getJSONRecordSet($query, $params));
     }
+
+    /*
+        function to get all sessions. (JWT token required)
+        @param sessionId and name (if params is existing, to update the name based on the sessionId )
+        @return {data: [], count: 0} 
+    */
     public function json_sessions() {
         $input = json_decode(file_get_contents("php://input"));
         try {

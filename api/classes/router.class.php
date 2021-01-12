@@ -77,7 +77,7 @@ class Router {
                     Type: GET <br>
                     Description: To get authors list<br>
                     Parameters: None <br>
-                    Authentication: JWT Token in header <br>
+                    Authentication: None <br>
                     Example output: {count: 3768, data: []} <p>
 
                     Endpoint: /api/content_authors?authorId=13087 <br>

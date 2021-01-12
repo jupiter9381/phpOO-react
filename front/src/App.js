@@ -32,9 +32,6 @@ function App() {
                                 <NavLink activeClassName="selected" to="/sessions">Sessions</NavLink>
                             </li>
                             <li>
-                                <NavLink activeClassName="selected" to="/actors">Actors</NavLink>
-                            </li>
-                            <li>
                                 <NavLink activeClassName="selected" to="/admin">Admin</NavLink>
                             </li>
                         </ul>
@@ -54,9 +51,6 @@ function App() {
                         </Route>
                         <Route path="/sessions">
                             <Sessions />
-                        </Route>
-                        <Route path="/actors">
-                            <Actors />
                         </Route>
                         <Route path="/admin">
                             <Admin />
