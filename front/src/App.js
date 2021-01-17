@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, NavLink } from "react-router-dom";
 import Home from './components/Home.js';
-import Films from './components/Films.js'
-import Actors from './components/Actors.js';
 import Authors from  './components/Authors.js';
 import Sessions from  './components/Sessions.js';
 import Schedule from  './components/Schedule.js';
@@ -39,9 +37,6 @@ function App() {
                     <Switch>
                         <Route exact path="/">
                             <Home />
-                        </Route>
-                        <Route path="/films">
-                            <Films />
                         </Route>
                         <Route path="/schedule">
                             <Schedule />

@@ -1,7 +1,6 @@
 import React from 'react';
 import Config from '../config.js';
 import ScheduleDetail from './ScheduleDetail';
-import { clearAndGoAdmin } from './utils.js'
 class ScheduleDay extends React.Component {
 
     state = {display:false, data:[]}

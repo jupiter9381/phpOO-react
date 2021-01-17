@@ -1,6 +1,5 @@
 import React from 'react';
 import ScheduleDay from './ScheduleDay.js';
-import { isAuthenticated } from './utils.js';
 
 class Schedule extends React.Component {
 

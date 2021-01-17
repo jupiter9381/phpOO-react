@@ -1,6 +1,5 @@
 import React from 'react';
 import Search from './Search';
-import Film from './Film.js';
 
 class Home extends React.Component {
 
@@ -54,15 +53,7 @@ class Home extends React.Component {
 
         return (
             <div>
-                <Search query={this.state.query} handleSearch={this.handleSearch}/>
-                {
-                    filteredData
-                        .slice(((this.state.pageSize*this.state.page)-this.state.pageSize),(this.state.pageSize*this.state.page))
-                        .map( (details, i) => (<Film key={i} details={details} />) )
-                }
-                <button onClick={this.handlePreviousClick} disabled={disabledPrevious}>Previous</button>
-                Page {this.state.page} of {noOfPages}
-                <button onClick={this.handleNextClick} disabled={disabledNext}>Next</button>
+                <h2>Welcome</h2>
             </div>
         );
     }
